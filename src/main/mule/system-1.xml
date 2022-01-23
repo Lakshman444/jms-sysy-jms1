@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="c9ffc2a1-9bac-461b-9ff9-c52c1a90d258" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="123456" database="employee" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0f1a75bd-3561-41ec-b515-1e7a5d1f1eb7" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config1" doc:name="Database Config" doc:id="33e65843-7fad-44d3-8582-9d4106d9a8bc" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="123456" database="employee" />
+	</db:config>
+	<db:config name="Database_Config2" doc:name="Database Config" doc:id="3fb5b924-146a-4415-99d9-9cc46a20c20d" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="123456" database="employee" />
+	</db:config>
+	<flow name="system-1Flow" doc:id="a7c722c3-3956-4750-9341-a7c4a0e38fa5" >
+		<db:insert doc:name="Insert" doc:id="7e4fc796-fc39-4abe-bd22-4e0e969f125a" config-ref="Database_Config2">
+			<db:sql ><![CDATA[insert into emp values(:eid,:fn,:ln:,:des,:sal)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	eid: payload.empID,
+	fn: payload.empFirstName,
+	ln: payload.empLastName,
+	des: payload.empDesignation,
+	sal: payload.empSalary
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="6efe74f4-c6bc-466a-b061-c11df37af51a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
